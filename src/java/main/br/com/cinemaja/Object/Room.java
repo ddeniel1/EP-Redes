@@ -25,12 +25,24 @@ public class Room {
             }
     }
 
+    public ArrayList<Chair> getChairs() {
+        return chairs;
+    }
+
+    public Chair searchChair(String chairCode) {
+        final Chair[] chair1 = new Chair[1];
+        chairs.forEach(chair -> {
+            if (chair.equals(chairCode)) chair1[0] = chair;
+        });
+        return chair1[0];
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("\tSala ").append(name).append("\n\n");
         int aux=0;
         for (int i = 0; i < maxChairRaw; i++) {
-            for (int k = 0; k < maxChairColl; k++) {
+            for (int k = 0; k < maxChairColl && aux < chairs.size(); k++) {
                 s.append(chairs.get(aux)).append('\t');
                 aux++;
             }

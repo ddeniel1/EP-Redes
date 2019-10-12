@@ -3,7 +3,7 @@ package br.com.cinemaja.Object;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer {
+public class Customer extends Thread {
     private String nome;
     private List<Session> sessionsAttending = new ArrayList<>();
 

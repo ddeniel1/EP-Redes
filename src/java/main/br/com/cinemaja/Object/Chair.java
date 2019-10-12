@@ -49,6 +49,12 @@ public class Chair {
 
     @Override
     public String toString() {
-        return  available?""+ letter + number:"\t";
+        return "" + letter + number;
+    }
+
+    @Override
+    public boolean equals(Object s) {
+        String compare = s.toString();
+        return compare.equals("" + letter + number);
     }
 }
