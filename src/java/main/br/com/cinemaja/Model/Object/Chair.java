@@ -1,4 +1,4 @@
-package br.com.cinemaja.Object;
+package br.com.cinemaja.Model.Object;
 
 import java.util.concurrent.Semaphore;
 
@@ -43,8 +43,12 @@ public class Chair {
         mutex.acquire();
     }
 
-    public void setMutex(Semaphore mutex) {
+    public void addMutex() {
         this.mutex.release();
+    }
+
+    public int getMutexPermits() {
+        return mutex.availablePermits();
     }
 
     @Override

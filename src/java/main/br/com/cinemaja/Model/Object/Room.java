@@ -1,4 +1,4 @@
-package br.com.cinemaja.Object;
+package br.com.cinemaja.Model.Object;
 
 import java.util.ArrayList;
 
@@ -43,7 +43,7 @@ public class Room {
         int aux=0;
         for (int i = 0; i < maxChairRaw; i++) {
             for (int k = 0; k < maxChairColl && aux < chairs.size(); k++) {
-                s.append(chairs.get(aux)).append('\t');
+                s.append(chairs.get(aux).isAvailable() ? chairs.get(aux) : "").append('\t');
                 aux++;
             }
             s.append('\n');

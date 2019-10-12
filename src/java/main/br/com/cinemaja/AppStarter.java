@@ -1,8 +1,9 @@
 package br.com.cinemaja;
 
 
-import br.com.cinemaja.Controller.CustomerController;
-import br.com.cinemaja.Object.Session;
+import br.com.cinemaja.Model.Object.Session;
+import br.com.cinemaja.Network.Client.Client;
+import br.com.cinemaja.Network.Server.Server;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,24 +17,28 @@ public class AppStarter{
     }
 
     private static void initializeClient() {
-        CustomerController client = new CustomerController("Paulo", new Session("Avengers", 14, 10, LocalDateTime.parse("2019-10-10T19:00:00")));
+        Client client = new Client("127.0.0.1", 3000);
+        client.run();
+        // CustomerController customer = new CustomerController("Paulo", new Session("Avengers", 14, 10, LocalDateTime.parse("2019-10-10T19:00:00")));
 
 
     }
 
     private static void initializeServer() {
-        List<Session> sessionsList = new ArrayList<>();
         Session sessao = new Session("Avengers",14,10, LocalDateTime.parse("2019-10-10T19:00:00"));
+        List<Session> sessionsList = new ArrayList<>();
         sessionsList.add(sessao);
-        sessionsList.forEach(System.out::println);
+        Server server = new Server(3000, sessionsList);
+//        sessionsList.forEach(System.out::println);
 
-        CustomerController client = new CustomerController("Paulo", sessao);
+//        CustomerController client = new CustomerController("Paulo", sessao);
 
 //        ClientView cv = new ClientView("CinemaJA");
 //        cv.setSession(sessao);
 //        cv.run();
 
         System.out.println(sessao.toString());
+
     }
 
     private static void msg(String s) {

@@ -1,9 +1,10 @@
 package br.com.cinemaja.Controller;
 
 import br.com.cinemaja.ClientView;
-import br.com.cinemaja.Object.Chair;
-import br.com.cinemaja.Object.Customer;
-import br.com.cinemaja.Object.Session;
+import br.com.cinemaja.Model.Object.Chair;
+import br.com.cinemaja.Model.Object.Customer;
+import br.com.cinemaja.Model.Object.Session;
+import br.com.cinemaja.Network.Client.Client;
 
 import javax.management.timer.Timer;
 import java.util.List;
@@ -13,20 +14,20 @@ public class CustomerController extends Customer {
     ClientView view;
     private List<Chair> chairList;
 
-    public CustomerController(String nome, Session session) {
-        super(nome);
+    public CustomerController(String nome, Session session, Client id) {
+        super(nome, id);
         view = new ClientView("CinemaJA");
         view.setSession(session);
         chairList = view.run(this);
-        while (view.isOnline()) {
+        while (!view.isClosed()) {
             try {
                 sleep(100);
+                if (!view.isOnline()) proceedToCheckout(session, chairList);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        chairList.forEach(chair -> getAChair(chair));
-        proceedToCheckout(session);
+
 
     }
 
@@ -37,13 +38,16 @@ public class CustomerController extends Customer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        chair.setAvailable();
-        chair.setRentedBy(super.getThis());
         return true;
     }
 
-    private void proceedToCheckout(Session session) {
+    public boolean returnAChair(Chair chair) {
+        if (chair.isAvailable() && chair.getMutexPermits() > 0) return false;
+        chair.addMutex();
+        return true;
+    }
+
+    private void proceedToCheckout(Session session, List<Chair> chairList) {
         boolean accepted = false;
         long clock = System.currentTimeMillis() + Timer.ONE_MINUTE * 10;
         while (System.currentTimeMillis() < clock && !accepted) {
@@ -54,6 +58,20 @@ public class CustomerController extends Customer {
                 e.printStackTrace();
             }
         }
-        session.removeAvailableChairs();
+        if (accepted) chairList.forEach(chair -> {
+            if (chair.isAvailable()) {
+                chair.setAvailable();
+                chair.setRentedBy(super.getThis());
+                session.removeAvailableChairs();
+            }
+        });
+        else {
+            chairList.forEach(chair -> {
+                chair.addMutex();
+            });
+        }
+        view.setOnline(true);
+        view.displayButtons();
+
     }
 }

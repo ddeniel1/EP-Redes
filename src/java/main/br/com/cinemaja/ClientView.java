@@ -1,8 +1,8 @@
 package br.com.cinemaja;
 
 import br.com.cinemaja.Controller.CustomerController;
-import br.com.cinemaja.Object.Chair;
-import br.com.cinemaja.Object.Session;
+import br.com.cinemaja.Model.Object.Chair;
+import br.com.cinemaja.Model.Object.Session;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,13 +16,17 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
 
 
 
-    TextField text = new TextField(20);
     protected CustomerController customerController;
     Button button;
     private Session session;
     private List<Chair> chairsList;
     private List<Chair> selectedChairs;
     private boolean online = false;
+    private boolean closed = false;
+
+    public boolean isClosed() {
+        return closed;
+    }
 
     public ClientView(String title) {
         super(title);
@@ -48,26 +52,27 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
         this.session = session;
     }
 
-    private void displayButtons() {
+    public void displayButtons() {
         setSize(900, 600);
         removeAll();
 
         setLayout(new FlowLayout());
         addWindowListener(this);
         chairsList = session.getRoom().getChairs();
-//        System.out.println(chairsList.size());
+
 
         chairsList.forEach(chair -> {
             String chairName = chair.toString();
             button = new Button(chairName);
             button.setSize(10, 10);
-            button.setBackground((chair.isAvailable() ? Color.GREEN : Color.red));
+            button.setBackground((chair.getMutexPermits() > 0 ? Color.GREEN : chair.isAvailable() ? Color.yellow : Color.red));
             add(button);
             button.addActionListener(this);
         });
-        button = new Button("executar");
+        button = new Button("Confirmar compra");
         button.setSize(10, 10);
-        button.setBackground(Color.MAGENTA);
+        button.setBackground(Color.BLUE.darker().darker());
+        button.setForeground(Color.WHITE);
         add(button);
         button.addActionListener(this);
         setVisible(true);
@@ -80,16 +85,13 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
     }
 
     private void input(String actionCommand) {
-        if (actionCommand.equals("executar")) online = false;
+        if (actionCommand.equals("Confirmar compra")) online = false;
         else {
             online = true;
             Chair chair = session.getRoom().searchChair(actionCommand);
             if (selectedChairs.contains(chair)) {
                 selectedChairs.remove(chair);
-                button = new Button(chair.toString());
-                button.setBackground(Color.GREEN);
-                add(button);
-                setVisible(true);
+                customerController.returnAChair(chair);
             } else {
                 customerController.getAChair(chair);
                 selectedChairs.add(chair);
@@ -101,6 +103,7 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
 
     public void windowClosing(WindowEvent e) {
         dispose();
+        closed = true;
     }
 
     public void windowOpened(WindowEvent e) {
@@ -124,5 +127,9 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
 
     public boolean isOnline() {
         return online;
+    }
+
+    public void setOnline(boolean b) {
+        online = b;
     }
 }

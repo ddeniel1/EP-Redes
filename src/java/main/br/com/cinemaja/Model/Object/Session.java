@@ -1,4 +1,4 @@
-package br.com.cinemaja.Object;
+package br.com.cinemaja.Model.Object;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
