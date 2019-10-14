@@ -1,8 +1,9 @@
 package br.com.cinemaja.Model.Object;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Room {
+public class Room implements Serializable {
 
     private String name;
     private int maxChairRaw;

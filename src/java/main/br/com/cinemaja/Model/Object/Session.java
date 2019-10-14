@@ -1,9 +1,10 @@
 package br.com.cinemaja.Model.Object;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Session {
+public class Session implements Serializable {
 
     private String name;
     private int availableChairs;
@@ -54,5 +55,14 @@ public class Session {
                 "\navailableChairs: " + availableChairs +
                 "\nroom\n" + room.toString() +
                 "dateTime\t" + dateTime.format(DateTimeFormatter.ofPattern("dd/MM/uuuu HH:mm"));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Session session = (Session) o;
+        return name.equals(session.name) &&
+                dateTime.equals(session.dateTime);
     }
 }

@@ -1,8 +1,9 @@
 package br.com.cinemaja.Model.Object;
 
+import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
-public class Chair {
+public class Chair implements Serializable {
 
     private char letter;
     private int number;

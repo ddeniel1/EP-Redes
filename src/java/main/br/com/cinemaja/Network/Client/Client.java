@@ -1,18 +1,21 @@
 package br.com.cinemaja.Network.Client;
 
+import br.com.cinemaja.Config.Socket;
 import br.com.cinemaja.Controller.CustomerController;
 import br.com.cinemaja.Model.Object.Session;
+import br.com.cinemaja.Network.Server.Server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.time.LocalDateTime;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class Client extends Thread {
+public class Client extends Thread implements Serializable {
     private static String ip;
     private int hostPort;
+    private Socket socket;
+    private Server server;
+
 
     public Client(String ip, int hostPort) {
         this.ip = ip;
@@ -22,17 +25,15 @@ public class Client extends Thread {
 
     public void run() {
         try {
-            Socket socket = new Socket(ip, hostPort);
-            PrintWriter writer = new PrintWriter(socket.getOutputStream());
-
-            writer.print(ip + "\n" + socket.getLocalPort());
-            writer.flush();
-            writer.close();
-            socket = new Socket(ip, hostPort);
+            initClient();
+            ObjectOutputStream objectOut;
+            objectOut = new ObjectOutputStream(socket.getOutputStream());
+            objectOut.writeUTF(ip + "\n" + socket.getLocalPort());
+            objectOut.flush();
 
 
             CustomerController customerController = new CustomerController("CinemaJA", getSession(socket), this);
-            socket.close();
+            customerController.run();
 
 
         } catch (IOException e) {
@@ -40,25 +41,56 @@ public class Client extends Thread {
         }
     }
 
+    public void initClient() {
+        try {
+            socket = new Socket(ip, hostPort);
+            socket.setTcpNoDelay(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private Session getSession(Socket socket) {
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            Session session = new Session(reader.readLine().trim(), Integer.parseInt(reader.readLine().trim()),
-                    Integer.parseInt(reader.readLine().trim()), LocalDateTime.parse(reader.readLine().trim()));
+            ObjectInputStream objectIn;
+            objectIn = new ObjectInputStream(socket.getInputStream());
+            Session session = (Session) objectIn.readObject();
             System.out.println(session.toString());
-            reader.close();
             return session;
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }
 
     }
 
+    public void closeClient() {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            out.writeObject(null);
+            out.flush();
+            out.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public String toString() {
-        return "Client{" + ip +
-                " hostPort=" + hostPort +
-                '}';
+        return "Client{ " + ip +
+                ":" + hostPort +
+                " }";
+    }
+
+    public void updateSession(Session session) {
+        try {
+            ObjectOutputStream objectOut;
+            objectOut = new ObjectOutputStream(socket.getOutputStream());
+            objectOut.writeObject(session);
+            objectOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

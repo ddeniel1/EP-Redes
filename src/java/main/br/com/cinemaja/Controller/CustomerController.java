@@ -11,12 +11,24 @@ import java.util.List;
 
 public class CustomerController extends Customer {
 
-    ClientView view;
+    private ClientView view;
     private List<Chair> chairList;
+    private Session session;
+
+    public CustomerController(String nome, Client id) {
+        super(nome, id);
+    }
 
     public CustomerController(String nome, Session session, Client id) {
         super(nome, id);
         view = new ClientView("CinemaJA");
+        this.session = session;
+
+    }
+
+    @Override
+    public void run() {
+        super.run();
         view.setSession(session);
         chairList = view.run(this);
         while (!view.isClosed()) {
@@ -27,8 +39,7 @@ public class CustomerController extends Customer {
                 e.printStackTrace();
             }
         }
-
-
+        super.id.closeClient();
     }
 
     public boolean getAChair(Chair chair) {
@@ -70,6 +81,7 @@ public class CustomerController extends Customer {
                 chair.addMutex();
             });
         }
+        super.id.updateSession(session);
         view.setOnline(true);
         view.displayButtons();
 

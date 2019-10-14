@@ -2,10 +2,11 @@ package br.com.cinemaja.Model.Object;
 
 import br.com.cinemaja.Network.Client.Client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer extends Thread {
+public class Customer extends Thread implements Serializable {
     private String nome;
     private List<Session> sessionsAttending = new ArrayList<>();
     protected final Client id;
