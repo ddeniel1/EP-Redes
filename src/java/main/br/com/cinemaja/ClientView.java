@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientView extends Frame implements WindowListener, ActionListener {
 
@@ -53,26 +54,39 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
     }
 
     public void displayButtons() {
-        setSize(900, 600);
+        int sizeL = session.getRoom().getMaxChairColl();
+        int sizeH = session.getRoom().getMaxChairRaw();
+        setSize(sizeL*70, sizeH*50);
         removeAll();
 
         setLayout(new FlowLayout());
         addWindowListener(this);
         chairsList = session.getRoom().getChairs();
 
+        String imp = "a";
+        int x = 12, y = 12;
 
-        chairsList.forEach(chair -> {
+        for (Chair chair : chairsList) {
             String chairName = chair.toString();
             button = new Button(chairName);
-            button.setSize(10, 10);
+            button.setSize(20, 20);
+//            button.setLocation(x, y);
+//            button.setBounds(x,y,x,y);
+//            if (chairName.startsWith(imp)) y+=20;
+//            else {
+//                y=12;
+//                x+=20;
+//                imp = String.valueOf(chairName.charAt(0));
+//            }
             button.setBackground((chair.getMutexPermits() > 0 ? Color.GREEN : chair.isAvailable() ? Color.yellow : Color.red));
             add(button);
             button.addActionListener(this);
-        });
+        }
         button = new Button("Confirmar compra");
         button.setSize(10, 10);
         button.setBackground(Color.BLUE.darker().darker());
         button.setForeground(Color.WHITE);
+//        button.setBounds(10,10,x,y);
         add(button);
         button.addActionListener(this);
         setVisible(true);
@@ -89,7 +103,7 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
         else {
             online = true;
             Chair chair = session.getRoom().searchChair(actionCommand);
-            if (selectedChairs.contains(chair)) {
+            if (selectedChairs.contains(chair) && chair.getRentedBy().equals(customerController)) {
                 selectedChairs.remove(chair);
                 customerController.returnAChair(chair);
             } else {

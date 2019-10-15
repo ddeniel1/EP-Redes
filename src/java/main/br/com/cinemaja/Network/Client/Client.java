@@ -14,7 +14,6 @@ public class Client extends Thread implements Serializable {
     private static String ip;
     private int hostPort;
     private Socket socket;
-    private Server server;
 
 
     public Client(String ip, int hostPort) {
@@ -35,7 +34,7 @@ public class Client extends Thread implements Serializable {
             CustomerController customerController = new CustomerController("CinemaJA", getSession(socket), this);
             customerController.run();
 
-
+            objectOut.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,10 +64,9 @@ public class Client extends Thread implements Serializable {
 
     public void closeClient() {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            out.writeObject(null);
-            out.flush();
-            out.close();
+            new ObjectOutputStream(socket.getOutputStream()).writeObject(null);
+            socket.shutdownInput();
+            socket.shutdownOutput();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

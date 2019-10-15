@@ -24,18 +24,19 @@ public class Server extends Thread implements Serializable {
         this.sessions = sessions;
 
         try {
-            msg("Server is starting... ");
+            msg("Servidor inicializando... ");
             ServerSocket ss = new ServerSocket(port);
 
             while (true) {
-                msg("waiting for incoming connections...");
-                Socket connection = ss.accept();
-                new Server(connection).start();
+                msg("Esperando conexoes...");
+
+                new Server(ss.accept()).start();
+
+//                this.start();
             }
         } catch (IOException e) {
-            System.out.println("Unable to listen to port.");
+            System.out.println("Nao foi possivel conectar-se com o cliente");
             e.printStackTrace();
-        } finally {
         }
     }
 
@@ -43,11 +44,9 @@ public class Server extends Thread implements Serializable {
         this.socket = socket;
         try {
             this.socket.setTcpNoDelay(true);
-            msg("Client connected successfully: " + socket.getInetAddress() + ":" + socket.getPort());
+            msg("Client conectado com sucesso: " + socket.getInetAddress() + ":" + socket.getPort());
             connectionCount++;
             msg("Clientes conectados: " + connectionCount);
-            run();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,15 +58,17 @@ public class Server extends Thread implements Serializable {
             clients.add(getClient());
             sendSession(sessions.get(0));
             Session session;
-            while ((session = (Session) new ObjectInputStream(socket.getInputStream()).readObject()) != null) {
+            while (!socket.isInputShutdown() && (session = (Session) new ObjectInputStream(socket.getInputStream()).readObject()) != null) {
                 sessionAtualization(session);
             }
-        } catch (IOException | ClassNotFoundException e) {
+            close();
+            this.finalize();
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
-    private void sessionAtualization(Session session) throws IOException {
+    private void sessionAtualization(Session session) {
 
             sessions.set(sessions.indexOf(session), session);
 
@@ -77,16 +78,17 @@ public class Server extends Thread implements Serializable {
 
     private void sendSession(Session session) throws IOException {
         ObjectOutputStream objectOut;
-        objectOut = new ObjectOutputStream(socket.getOutputStream());
+        if (!socket.isOutputShutdown())objectOut = new ObjectOutputStream(socket.getOutputStream());
+        else return;
         objectOut.writeObject(session);
         objectOut.flush();
-
     }
 
     private Client getClient() {
         try {
             ObjectInputStream objectIn;
-            objectIn = new ObjectInputStream(socket.getInputStream());
+            if (!socket.isInputShutdown())objectIn = new ObjectInputStream(socket.getInputStream());
+            else return null;
             String[] get = objectIn.readUTF().split("\n");
             Client client = new Client(get[0], Integer.parseInt(get[1]));
             return client;
@@ -106,8 +108,10 @@ public class Server extends Thread implements Serializable {
 
     public void close() {
         try {
-            socket.close();
+            if (!socket.isInputShutdown())socket.shutdownInput();
+            if (!socket.isOutputShutdown())socket.shutdownOutput();
             connectionCount--;
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

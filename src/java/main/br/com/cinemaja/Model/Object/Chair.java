@@ -1,5 +1,7 @@
 package br.com.cinemaja.Model.Object;
 
+import br.com.cinemaja.Controller.CustomerController;
+
 import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
@@ -9,13 +11,13 @@ public class Chair implements Serializable {
     private int number;
     private boolean available = true;
     private Semaphore mutex = new Semaphore(1,true);
-    private Customer rentedBy;
+    private CustomerController rentedBy;
 
-    public Customer getRentedBy() {
+    public CustomerController getRentedBy() {
         return rentedBy;
     }
 
-    public void setRentedBy(Customer rentedBy) {
+    public void setRentedBy(CustomerController rentedBy) {
         this.rentedBy = rentedBy;
     }
 

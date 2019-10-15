@@ -10,6 +10,14 @@ public class Room implements Serializable {
     private int maxChairColl;
     private ArrayList<Chair> chairs = new ArrayList<>();
 
+    public int getMaxChairRaw() {
+        return maxChairRaw;
+    }
+
+    public int getMaxChairColl() {
+        return maxChairColl;
+    }
+
     public Room(String name, int maxChairRaw, int maxChairColl) {
         this.name = name;
         this.maxChairRaw = maxChairRaw;

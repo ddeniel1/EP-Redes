@@ -55,6 +55,7 @@ public class CustomerController extends Customer {
     public boolean returnAChair(Chair chair) {
         if (chair.isAvailable() && chair.getMutexPermits() > 0) return false;
         chair.addMutex();
+        if (!chair.isAvailable()) chair.setAvailable();
         return true;
     }
 
@@ -72,7 +73,7 @@ public class CustomerController extends Customer {
         if (accepted) chairList.forEach(chair -> {
             if (chair.isAvailable()) {
                 chair.setAvailable();
-                chair.setRentedBy(super.getThis());
+                chair.setRentedBy(this);
                 session.removeAvailableChairs();
             }
         });

@@ -28,7 +28,7 @@ public class AppStarter{
         Session sessao = new Session("Avengers",14,10, LocalDateTime.parse("2019-10-10T19:00:00"));
         List<Session> sessionsList = new ArrayList<>();
         sessionsList.add(sessao);
-        Server server = new Server(3000, sessionsList);
+        new Server(3000, sessionsList).start();
 //        sessionsList.forEach(System.out::println);
 
 //        CustomerController client = new CustomerController("Paulo", sessao);
