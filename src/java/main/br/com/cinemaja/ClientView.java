@@ -11,7 +11,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClientView extends Frame implements WindowListener, ActionListener {
 
@@ -58,36 +57,40 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
         int sizeH = session.getRoom().getMaxChairRaw();
         setSize(sizeL*70, sizeH*50);
         removeAll();
-
-        setLayout(new FlowLayout());
-        addWindowListener(this);
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
         chairsList = session.getRoom().getChairs();
 
-        String imp = "a";
-        int x = 12, y = 12;
-
+        char letter = 'a';
+        c.gridx = -1;
+        c.gridy = 0;
         for (Chair chair : chairsList) {
             String chairName = chair.toString();
             button = new Button(chairName);
-            button.setSize(20, 20);
-//            button.setLocation(x, y);
-//            button.setBounds(x,y,x,y);
-//            if (chairName.startsWith(imp)) y+=20;
-//            else {
-//                y=12;
-//                x+=20;
-//                imp = String.valueOf(chairName.charAt(0));
-//            }
             button.setBackground((chair.getMutexPermits() > 0 ? Color.GREEN : chair.isAvailable() ? Color.yellow : Color.red));
-            add(button);
+            if (letter == chairName.charAt(0)) {
+                c.gridx++;
+            } else {
+                letter = chairName.charAt(0);
+                c.gridx = 0;
+                c.gridy++;
+            }
+            c.fill = GridBagConstraints.HORIZONTAL;
+            add(button, c);
             button.addActionListener(this);
         }
+
         button = new Button("Confirmar compra");
-        button.setSize(10, 10);
         button.setBackground(Color.BLUE.darker().darker());
         button.setForeground(Color.WHITE);
-//        button.setBounds(10,10,x,y);
-        add(button);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.PAGE_END;
+        c.gridx = 0;
+        c.gridy = sizeH;
+        c.gridwidth = sizeL;
+        add(button, c);
+        addWindowListener(this);
+        pack();
         button.addActionListener(this);
         setVisible(true);
 

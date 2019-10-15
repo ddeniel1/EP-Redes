@@ -3,7 +3,6 @@ package br.com.cinemaja.Network.Client;
 import br.com.cinemaja.Config.Socket;
 import br.com.cinemaja.Controller.CustomerController;
 import br.com.cinemaja.Model.Object.Session;
-import br.com.cinemaja.Network.Server.Server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,9 +10,12 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class Client extends Thread implements Serializable {
+    private static final long serialVersionUID = -3411466216776411404L;
+
     private static String ip;
     private int hostPort;
-    private Socket socket;
+    private static Socket socket;
+    private static CustomerController customerController;
 
 
     public Client(String ip, int hostPort) {
@@ -21,22 +23,35 @@ public class Client extends Thread implements Serializable {
         this.hostPort = hostPort;
     }
 
-
+    @Override
     public void run() {
-        try {
-            initClient();
-            ObjectOutputStream objectOut;
-            objectOut = new ObjectOutputStream(socket.getOutputStream());
-            objectOut.writeUTF(ip + "\n" + socket.getLocalPort());
-            objectOut.flush();
+        if (this.getName().equals("listener")) {
+            while (!socket.isInputShutdown()){
+                try {
+                    customerController.setCurrentSession((Session)new ObjectInputStream(socket.getInputStream()).readObject());
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            try {
+                initClient();
+                ObjectOutputStream objectOut;
+                objectOut = new ObjectOutputStream(socket.getOutputStream());
+                objectOut.writeUTF(ip + "\n" + socket.getLocalPort());
+                objectOut.flush();
+
+                Client thread = new Client(ip,hostPort);
 
 
-            CustomerController customerController = new CustomerController("CinemaJA", getSession(socket), this);
-            customerController.run();
-
-            objectOut.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+                customerController = new CustomerController("CinemaJA", getSession(socket), this);
+                customerController.run();
+                thread.setName("listener");
+                thread.run();
+                objectOut.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

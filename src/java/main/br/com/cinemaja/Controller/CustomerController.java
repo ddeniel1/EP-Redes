@@ -7,9 +7,11 @@ import br.com.cinemaja.Model.Object.Session;
 import br.com.cinemaja.Network.Client.Client;
 
 import javax.management.timer.Timer;
+import java.io.ObjectInputStream;
 import java.util.List;
 
 public class CustomerController extends Customer {
+    private static final long serialVersionUID = 5224128923137706204L;
 
     private ClientView view;
     private List<Chair> chairList;
@@ -86,5 +88,11 @@ public class CustomerController extends Customer {
         view.setOnline(true);
         view.displayButtons();
 
+    }
+
+    public void setCurrentSession(Session session) {
+        super.id.updateSession(session);
+        view.setOnline(true);
+        view.displayButtons();
     }
 }
