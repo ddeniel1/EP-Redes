@@ -46,8 +46,10 @@ public class Client extends Thread implements Serializable {
 
                 customerController = new CustomerController("CinemaJA", getSession(socket), this);
                 customerController.run();
-                thread.setName("listener");
-                thread.run();
+                synchronized (thread){
+                    thread.setName("listener");
+                    thread.run();
+                }
                 objectOut.close();
             } catch (IOException e) {
                 e.printStackTrace();

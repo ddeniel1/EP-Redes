@@ -106,16 +106,20 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
         else {
             online = true;
             Chair chair = session.getRoom().searchChair(actionCommand);
-            if (selectedChairs.contains(chair) && chair.getRentedBy().equals(customerController)) {
+            if (selectedChairs.contains(chair)) {
                 selectedChairs.remove(chair);
                 customerController.returnAChair(chair);
-            } else {
+            } else if(chair.getMutexPermits()<1){
+
+
+            }
+            else {
                 customerController.getAChair(chair);
                 selectedChairs.add(chair);
             }
-            displayButtons();
+            customerController.setCurrentSession(session);
         }
-        customerController.updateSessions();
+        displayButtons();
 
     }
 

@@ -68,9 +68,12 @@ public class Server extends Thread implements Serializable {
         }
     }
 
-    private void sessionAtualization(Session session) {
+    private void sessionAtualization(Session session) throws IOException {
 
             sessions.set(sessions.indexOf(session), session);
+
+            if (!socket.isOutputShutdown())
+                new ObjectOutputStream(socket.getOutputStream()).writeObject(session);
 
 
 
