@@ -7,7 +7,6 @@ import br.com.cinemaja.Model.Object.Session;
 import br.com.cinemaja.Network.Client.Client;
 
 import javax.management.timer.Timer;
-import java.io.ObjectInputStream;
 import java.util.List;
 
 public class CustomerController extends Customer {
@@ -91,7 +90,9 @@ public class CustomerController extends Customer {
     }
 
     public void setCurrentSession(Session session) {
+        super.id.updateSession(session);
         this.session=session;
+        view.setSession(session);
         view.setOnline(true);
         view.displayButtons();
     }

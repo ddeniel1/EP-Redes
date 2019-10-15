@@ -17,6 +17,7 @@ public class Server extends Thread implements Serializable {
     static List<Client> clients = new ArrayList<>();
     static List<Session> sessions;
     private Socket socket;
+    private static List<Socket> socketList = new ArrayList<>();
 
 
     public Server(int port, List<Session> sessions) {
@@ -42,6 +43,7 @@ public class Server extends Thread implements Serializable {
 
     public Server(Socket socket) {
         this.socket = socket;
+        socketList.add(this.socket);
         try {
             this.socket.setTcpNoDelay(true);
             msg("Client conectado com sucesso: " + socket.getInetAddress() + ":" + socket.getPort());
@@ -72,8 +74,13 @@ public class Server extends Thread implements Serializable {
 
             sessions.set(sessions.indexOf(session), session);
 
-            if (!socket.isOutputShutdown())
-                new ObjectOutputStream(socket.getOutputStream()).writeObject(session);
+        socketList.stream().filter(socket1 -> !socket1.isOutputShutdown()).forEach(socket1 -> {
+            try {
+                new ObjectOutputStream(socket1.getOutputStream()).writeObject(session);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
 
 

@@ -50,6 +50,7 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
 
     public void setSession(Session session) {
         this.session = session;
+        this.chairsList = session.getRoom().getChairs();
     }
 
     public void displayButtons() {

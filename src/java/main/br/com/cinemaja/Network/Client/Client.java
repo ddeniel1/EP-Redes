@@ -48,7 +48,7 @@ public class Client extends Thread implements Serializable {
                 customerController.run();
                 synchronized (thread){
                     thread.setName("listener");
-                    thread.run();
+                    thread.start();
                 }
                 objectOut.close();
             } catch (IOException e) {
