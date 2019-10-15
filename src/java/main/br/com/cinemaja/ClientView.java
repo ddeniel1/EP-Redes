@@ -115,6 +115,7 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
             }
             displayButtons();
         }
+        customerController.updateSessions();
 
     }
 

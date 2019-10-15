@@ -95,4 +95,10 @@ public class CustomerController extends Customer {
         view.setOnline(true);
         view.displayButtons();
     }
+
+    public void updateSessions() {
+        id.updateSession(session);
+        view.setOnline(true);
+        view.displayButtons();
+    }
 }
