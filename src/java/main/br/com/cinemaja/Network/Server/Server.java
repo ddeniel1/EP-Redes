@@ -1,5 +1,6 @@
 package br.com.cinemaja.Network.Server;
 
+import br.com.cinemaja.Model.Object.Chair;
 import br.com.cinemaja.Model.Object.Session;
 import br.com.cinemaja.Network.Client.Client;
 
@@ -70,13 +71,13 @@ public class Server extends Thread implements Serializable {
         }
     }
 
-    private void sessionAtualization(Session session) throws IOException {
+    private void sessionAtualization(Session session) {
 
-            sessions.set(sessions.indexOf(session), session);
+        int index = mergeSessions(session);
 
         socketList.stream().filter(socket1 -> !socket1.isOutputShutdown()).forEach(socket1 -> {
             try {
-                new ObjectOutputStream(socket1.getOutputStream()).writeObject(session);
+                new ObjectOutputStream(socket1.getOutputStream()).writeObject(this.sessions.get(index));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -84,6 +85,24 @@ public class Server extends Thread implements Serializable {
 
 
 
+    }
+
+    private int mergeSessions(Session session) {
+        int index = sessions.indexOf(session);
+
+        Session merging = sessions.get(index);
+        List<Chair> newChairs = session.getRoom().getChairs();
+
+        newChairs.forEach(chair -> {
+            if (chair.equals(merging.getRoom().searchChair(chair.toString()))) ;
+            else {
+                chair = merging.getRoom().searchChair(chair.toString()).getMutexPermits() < chair.getMutexPermits() ? merging.getRoom().searchChair(chair.toString()) : merging.getRoom().searchChair(chair.toString()).isAvailable() ? chair : merging.getRoom().searchChair(chair.toString());
+            }
+        });
+        sessions.set(index, session);
+
+
+        return index;
     }
 
     private void sendSession(Session session) throws IOException {

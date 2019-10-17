@@ -16,10 +16,6 @@ public class CustomerController extends Customer {
     private List<Chair> chairList;
     private Session session;
 
-    public CustomerController(String nome, Client id) {
-        super(nome, id);
-    }
-
     public CustomerController(String nome, Session session, Client id) {
         super(nome, id);
         view = new ClientView("CinemaJA");
@@ -56,7 +52,7 @@ public class CustomerController extends Customer {
     public boolean returnAChair(Chair chair) {
         if (chair.isAvailable() && chair.getMutexPermits() > 0) return false;
         chair.addMutex();
-       // if (!chair.isAvailable()) chair.setAvailable();
+        if (!chair.isAvailable()) chair.setAvailable();
         return true;
     }
 
@@ -79,9 +75,7 @@ public class CustomerController extends Customer {
             }
         });
         else {
-            chairList.forEach(chair -> {
-                chair.addMutex();
-            });
+            chairList.forEach(Chair::addMutex);
         }
         super.id.updateSession(session);
         view.setOnline(true);
@@ -93,12 +87,6 @@ public class CustomerController extends Customer {
         super.id.updateSession(session);
         this.session=session;
         view.setSession(session);
-        view.setOnline(true);
-        view.displayButtons();
-    }
-
-    public void updateSessions() {
-        id.updateSession(session);
         view.setOnline(true);
         view.displayButtons();
     }

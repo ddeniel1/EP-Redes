@@ -15,7 +15,6 @@ import java.util.List;
 public class ClientView extends Frame implements WindowListener, ActionListener {
 
 
-
     protected CustomerController customerController;
     Button button;
     private Session session;
@@ -42,10 +41,6 @@ public class ClientView extends Frame implements WindowListener, ActionListener 
         selectedChairs = new ArrayList<>();
         online = true;
         return selectedChairs;
-    }
-
-    public Session getSession() {
-        return session;
     }
 
     public void setSession(Session session) {

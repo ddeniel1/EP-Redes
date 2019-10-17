@@ -12,31 +12,22 @@ import java.util.List;
 
 public class AppStarter{
     public static void main(String[] args) {
-        if (args[0].equals("server")) initializeServer();
-        else initializeClient();
+        if (args[0].equals("servidor")) initializeServer();
+        else if (args[0].equals("client")) initializeClient();
+        else
+            System.out.println("Inicie o servidor digitando servidor como parametro ou cliente digitando client como parametro.");
     }
 
     private static void initializeClient() {
         Client client = new Client("127.0.0.1", 3000);
         client.run();
-        // CustomerController customer = new CustomerController("Paulo", new Session("Avengers", 14, 10, LocalDateTime.parse("2019-10-10T19:00:00")));
-
-
     }
 
     private static void initializeServer() {
-        Session sessao = new Session("Avengers",14,10, LocalDateTime.parse("2019-10-10T19:00:00"));
+        Session sessao = new Session("Avengers", 5, 5, LocalDateTime.parse("2019-10-10T19:00:00"));
         List<Session> sessionsList = new ArrayList<>();
         sessionsList.add(sessao);
         new Server(3000, sessionsList).start();
-//        sessionsList.forEach(System.out::println);
-
-//        CustomerController client = new CustomerController("Paulo", sessao);
-
-//        ClientView cv = new ClientView("CinemaJA");
-//        cv.setSession(sessao);
-//        cv.run();
-
         System.out.println(sessao.toString());
 
     }

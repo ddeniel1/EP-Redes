@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Session implements Serializable {
-
+    private static final long serialVersionUID = 2488584742676418536L;
     private String name;
     private int availableChairs;
     private Room room;
@@ -18,34 +18,12 @@ public class Session implements Serializable {
         this.room = new Room(name,roomRaw,roomColl);
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void addAvailableChairs(int availableChairs) {
-        this.availableChairs += availableChairs;
-    }
-    public void removeAvailableChairs(int availableChairs) {
-        this.availableChairs -= availableChairs;
-    }
     public void removeAvailableChairs() {
         this.availableChairs--;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getAvailableChairs() {
-        return availableChairs;
-    }
-
     public Room getRoom() {
         return room;
-    }
-
-    public LocalDateTime getDateTime() {
-        return dateTime;
     }
 
     @Override

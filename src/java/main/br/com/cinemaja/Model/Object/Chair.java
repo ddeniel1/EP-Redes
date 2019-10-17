@@ -6,16 +6,13 @@ import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
 public class Chair implements Serializable {
+    private static final long serialVersionUID = 6485555842676418536L;
 
     private char letter;
     private int number;
     private boolean available = true;
     private Semaphore mutex = new Semaphore(1,true);
     private CustomerController rentedBy;
-
-    public CustomerController getRentedBy() {
-        return rentedBy;
-    }
 
     public void setRentedBy(CustomerController rentedBy) {
         this.rentedBy = rentedBy;
@@ -26,14 +23,6 @@ public class Chair implements Serializable {
         this.number = number;
     }
 
-    public char getLetter() {
-        return letter;
-    }
-    
-    public int getNumber() {
-        return number;
-    }
-    
     public boolean isAvailable() {
         return available;
     }

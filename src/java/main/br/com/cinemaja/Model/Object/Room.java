@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Room implements Serializable {
+    private static final long serialVersionUID = -3488566842676418536L;
 
     private String name;
     private int maxChairRaw;
